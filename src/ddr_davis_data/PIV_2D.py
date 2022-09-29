@@ -13,9 +13,9 @@ from .base import davis_set as _ds
 from .utils import *
 from . import shared as _shared
 
-class avg_velocity_set(_ds):
+class velocity_set(_ds):
     '''
-    avg_velocity_set object which provides functionalities to work with velocity and image set of a perticular case.
+    velocity_set object which provides functionalities to work with velocity and image set of a perticular case.
     Images can only be accessed if the .set file of velocity is within the subdirectories of recording folder.
     '''
     
@@ -33,7 +33,7 @@ class avg_velocity_set(_ds):
 
         Returns
         -------
-        avg_velocity_set object
+        velocity_set object
 
         '''
         super().__init__(filepath=filepath,load=load,rec_path=rec_path)
@@ -42,7 +42,7 @@ class avg_velocity_set(_ds):
             self.recording_set = _ds(self.recording_foldpath)
     
     def __repr__(self):
-        return f'avg_velocity_set object'
+        return f'velocity_set object'
     
     def __len__(self):
         return len(self.s)

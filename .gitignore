@@ -2,6 +2,8 @@
 build/
 dist/
 examples/
+*.ipynb
+*.ipynb_checkpoints
 *.egg-info/
 *.egg
 *.py[cod]
