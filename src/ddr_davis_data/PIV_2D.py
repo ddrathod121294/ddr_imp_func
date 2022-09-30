@@ -30,6 +30,8 @@ class velocity_set(_ds):
             whether to load the file. lvreader by default does not load the buffer into the memory. If this is True then buffer is loaded into the memory.
         rec_path : string or os.path object, optional, default= None
             path to .set file of recording folder. If this is supplied then recording image can directly be loaded by calling image method.
+        load_rec : BOOL, optional, default= False
+            whether to load the recording set or not. MAke it True when the parent folders of .set file contains the recording set, if not then the error will arise.
 
         Returns
         -------
@@ -38,7 +40,6 @@ class velocity_set(_ds):
         '''
         super().__init__(filepath=filepath,load=load,rec_path=rec_path)
         if load_rec:
-            self.case_name = self.recording_foldname
             self.recording_set = _ds(self.recording_foldpath)
     
     def __repr__(self):
@@ -88,6 +89,24 @@ class velocity_set(_ds):
         return self.recording_set[n][frame].masks[0]
     
     def image_plot(self,n=0,frame=0,**kwargs):
+        '''
+        
+
+        Parameters
+        ----------
+        n : int, optional
+            image number. The default is 0.
+        frame : int, optional
+            frame number of given image. The default is 0.
+        **kwargs : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        matplotlib.pyplot like
+            plots the image
+
+        '''
         return self.recording_set[n][frame].plot(**kwargs)
         
     
@@ -255,50 +274,7 @@ class velocity_set(_ds):
     def grid(self,n=0):
         return self.s[n][0].grid.x , self.s[n][0].grid.y
     
-    def make_quiver_data(self,n=0,fracx=6,fracy=None):
-        '''
-
-        Parameters
-        ----------
-        n : TYPE, Int
-            DESCRIPTION. Frame number
-        fracx : TYPE, int
-            DESCRIPTION. divide the total samples with fracx in x-axis
-        fracy : TYPE, int
-            DESCRIPTION. divide the total samples with fracy in y-axis
-
-        Returns
-        -------
-        data : TYPE, dictionary
-            DESCRIPTION. Contains sub-sampled data of x,y,u,v
-
-        '''
-        
-        if fracy is None:
-            fracy = fracx
-        x,y = self.vector_coords(n=n)
-        u,v = self.u(n=n),self.v(n=n)
-        
-        idx = []
-        for i in range(0,x.shape[0],fracy):
-            idx.append(i)
-        x1 = x[idx]
-        y1 = y[idx]
-        u1 = u[idx]
-        v1 = v[idx]
-        
-        for i in range(0,x1.shape[1],fracx):
-            idx.append(i)
-        x1 = x1[:,idx]
-        y1 = y1[:,idx]
-        u1 = u1[:,idx]
-        v1 = v1[:,idx]
-        
-        data = {'x': x1, 'y':y1,
-                'u': u1, 'v':v1}
-        return data
-
-
+   
     def make_contour_data(self,n=0,z='u',unit=False):
         '''
         Parameters
@@ -361,25 +337,6 @@ class velocity_set(_ds):
         
         data['u'],data['v'] = self.u(n=n),self.v(n=n)
         data['x'],data['y'] = self.vector_linspace(n=n)
-        
-        # data['x'],data['y'] = self.vector_coords(n=n,angle=angle)
-        
-        # data['x'],data['y'] = data['y'],data['x']
-        
-        # xas = _np.argsort(data['x'])
-        # yas = _np.argsort(data['y'])
-        
-        # data['u'] = data['u'][xas]
-        # data['v'] = data['v'][yas]
-        # data['x'] = data['x'][xas]
-        # data['y'] = data['y'][yas]
-        
-        # data['x'],data['y'] = self.vector_coords(n=n,angle=angle)
-        
-        # d1 = self.limits(n=n,frame=frame)
-        # data['x'] = _np.linspace(d1['xlim'][0],d1['xlim'][1],data['u'].shape[1])
-        # data['y'] = _np.linspace(d1['ylim'][0],d1['ylim'][1],data['u'].shape[0])
-        
         return data
     
     def get_data_at_point(self,key=None,data=None,x=0,delx=0.25,y=0,dely=0.25,n=0):
