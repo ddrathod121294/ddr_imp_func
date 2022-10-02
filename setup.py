@@ -42,6 +42,8 @@ setup(
         'Intended Audience :: Science/Research',
         
         'Natural Language :: English',
+
+        "License :: OSI Approved :: MIT License",
         
         'Topic :: Education',
         'Topic :: Scientific/Engineering',
