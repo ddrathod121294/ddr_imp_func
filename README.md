@@ -62,7 +62,7 @@ filepath1 = r'D:\recorded images\background subtracted images\instantaneous velo
 s1 = ddr_davis_data.velocity_set(filepath = filepath1, load=True, rec_path=None, load_rec=False)
 ```
 
-s1 is the velocity set object. If the set folder is in hierarchy of the recorded image, then load_rec=True will load the recording set as well. Loading recording set helps in accessing recoded or raw images. To make the instantiation of velocity_set faster with recording set, it is better to give recoding set folder-path directly to <sec class="fattrib">rec_path</sec> attribute above.
+s1 is the velocity set object. If the set folder is in hierarchy of the recorded image, then load_rec=True will load the recording set as well. Loading recording set helps in accessing recoded or raw images. To make the instantiation of velocity_set faster with recording set, it is better to give recoding set folder-path directly to rec_path attribute above.
 
 ## Accessing data
 
