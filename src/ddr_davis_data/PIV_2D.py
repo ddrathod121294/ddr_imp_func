@@ -8,6 +8,7 @@ Created on Sun Dec  5 14:04:22 2021
 import numpy as _np
 import pandas as _pd
 import datetime as _dtm
+import os as _os
 
 from .base import davis_set as _ds
 from .utils import *
@@ -340,14 +341,14 @@ class velocity_set(_ds):
         return data
     
 
-def save_set(vel_set,set_name,set_path,n_start=0,n_end=-1):
-    ls1 = local_set(set_name,set_path,make_folder=True)
-    ls1.save_case(case=vel_set,n_start=n_start,n_end=n_end)
+def save_set(vel_set,set_name,set_foldpath,n_start=0,n_end=-1,print_info=True):
+    ls1 = local_set(set_name,set_foldpath,make_folder=True)
+    ls1.save_case(case=vel_set,n_start=n_start,n_end=n_end,print_info=print_info)
 
     
 class local_set:
     
-    def __init__(self,set_name,set_path,make_folder = False):
+    def __init__(self,set_name,set_foldpath,make_folder = False):
         '''
         class to access locally saved data. The class provides major functionalities as elocity_set, mainly make_data() function.
         
@@ -366,7 +367,7 @@ class local_set:
         None.
 
         '''
-        foldpath = _os.path.join(set_path,set_name)
+        foldpath = _os.path.join(set_foldpath,set_name)
         self.xfp = _os.path.join(foldpath,'x.npy')
         self.yfp = _os.path.join(foldpath,'y.npy')
         self.maskfp = _os.path.join(foldpath,'mask.npy')
@@ -444,14 +445,17 @@ class local_set:
         _np.save(file = _os.path.join(self.Vfp,fname),
                  arr=data['v'].data)
     
-    def save_case(self,case,n_start=0,n_end=-1):
+    def save_case(self,case,n_start=0,n_end=-1,print_info=True):
         d1 = case.make_data(n=n_start)
         self.save_coords(d1)
         self.save_mask(d1)
         if n_end == -1:
             n_end = len(case)
+        if print_info:
+            print(f'saving velocities')
         for i in range(n_start, n_end):
-            print(i)
+            if print_info:
+                print(i)
             d1 = case.make_data(n=i)
             self.save_uv(d1,n=i)
         return

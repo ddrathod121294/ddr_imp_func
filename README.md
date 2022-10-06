@@ -24,8 +24,7 @@ pip install ddr_davis_data
 ```
 ### Instantiation
 
-
-```python
+```py
 import ddr_davis_data
 import matplotlib.pyplot as plt
 import numpy as np
@@ -546,13 +545,54 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_48_0.png?raw=true)
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_47_0.png?raw=true)
     
 
 
 ## Saving the data to other directory in .npy format
 
+We need to give the name to the set and the folder path where the set will be stored. The function stores the X, Y coordinates and stores the U and V velocities image wise in subfolder.
+
+```py
+set_foldpath = r'D:'
+set_name = 'set1'
+```
+
 
 ```python
-
+ddr_davis_data.save_set(s1,set_name=set_name,set_foldpath=set_foldpath,
+                        n_start=0,n_end=3,print_info=True)
 ```
+
+    saving velocities
+    0
+    1
+    2
+    
+
+`n_start` and `n_end` specifies the starting and ending velocity files to be stored. `print_info = False`  will disable the output shown above
+
+## Working with local data
+We can give the path to above local set, and perform all the operation with velocity datas. As we have not saved any attributes we could not retrieve it with local data.
+
+
+```python
+# loading local set
+ls1 = ddr_davis_data.local_set(set_name=set_name,set_foldpath=set_foldpath)
+
+fig = plt.figure(figsize=(3,1.5))
+#plotting the contour plot
+d1 = ls1.make_data(n=2)
+d1['z'] = d1['u']
+ddr_davis_data.plot_contourf(data=d1,vmax=1,vmin=-1,colormap='cool',font_size=5)
+plt.show()
+```
+
+
+    
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_54_0.png?raw=true)
+    
+
+
+---
+---
