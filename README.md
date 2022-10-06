@@ -75,6 +75,20 @@ There are default and intuitive functions to get certain important attributes as
 
 
 ```python
+len(s1)
+```
+
+
+
+
+    100
+
+
+
+This gives the number of images in the velocity set.
+
+
+```python
 s1.recording_rate
 ```
 
@@ -134,7 +148,7 @@ s1.u(n=0)
 
 
 
-This is the $V_x$ velocity with masks. Mask crops the useful data from the overall image. Mostly PIV frames are not 100% used for velocity measurements. Meaning if jet is flowing from center of the image then the corners of the image is rendered useless for velocity measurement. Masks helps in neglecting those areas. It only considers the area of interest.
+This is the $V_x$ velocity with masks. Mask crops the useful data from the overall image. During velocity calculation in Davis if Mask is enabled (geometric mask) then the output velocities will have mask accordingly. Mostly PIV frames are not 100% used for velocity measurements. Meaning if jet is flowing from center of the image then the corners of the image is rendered useless for velocity measurement. Masks helps in neglecting those areas. It only considers the area of interest.
 
 Similarly $V_y$ can be accessed as follows.
 
@@ -210,7 +224,7 @@ s1.plot(n=10)
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_19_0.png?raw=true)
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_21_0.png?raw=true)
     
 
 
@@ -231,7 +245,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_21_0.png?raw=true)
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_23_0.png?raw=true)
     
 
 
@@ -254,7 +268,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_23_0.png?raw=true)
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_25_0.png?raw=true)
     
 
 
@@ -284,7 +298,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_25_0.png?raw=true)
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_27_0.png?raw=true)
     
 
 
@@ -324,7 +338,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_27_0.png?raw=true)
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_29_0.png?raw=true)
     
 
 
@@ -351,7 +365,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_29_0.png?raw=true)
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_31_0.png?raw=true)
     
 
 
@@ -372,7 +386,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_31_0.png?raw=true)
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_33_0.png?raw=true)
     
 
 
@@ -402,6 +416,143 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_36_0.png?raw=true)
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_38_0.png?raw=true)
     
 
+
+## Rotate bases
+Davis considers the $V_x$ in horizontal direction and $V_y$ in vertical direction. But for some cases, the physical bases (coordinate system) can be different. Say, $45^{\circ}$. Then we need to project our vectors in that perticular bases. `rotate_bases()` function does the work for us. Rotation angle must be in degrees.
+
+
+```python
+vmin= -1
+vmax= 1
+colormap='cool'
+
+fig = plt.figure(figsize=(5,1.5))
+
+ax1 = fig.add_subplot(121)
+d1 = s1.make_data(n=25)
+d1['z'] = d1['u']
+ddr_davis_data.plot_contourf(ax=ax1,data=d1,
+                             vmax=vmax,vmin=vmin,add_colorbar=False,colormap=colormap)
+ax1.set_title('original bases')
+
+ax2 = fig.add_subplot(122)
+
+# this function rotates the bases
+d1 = ddr_davis_data.rotate_bases(d1,angle=45)
+
+ddr_davis_data.plot_contourf(ax=ax2,data=d1,
+                             vmax=vmax,vmin=vmin,add_colorbar=False,colormap=colormap)
+ax2.set_title('rotated bases')
+
+plt.tight_layout()
+plt.subplots_adjust(right=0.85)
+ax = fig.add_axes([0.92,0.05,0.015,0.85])
+ddr_davis_data.plot_colorbar(vmin=vmin,vmax=vmax,cax=ax,font_size=7,
+                             colormap=colormap,roundto=2,ctitle='$V_x$ [m/s]',cticks=5)
+
+plt.show()
+```
+
+
+    
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_40_0.png?raw=true)
+    
+
+
+`rotate_bases()` function returns the same dict like data type with $V_x$ and $V_y$ projected on rotated bases. here X and Y axis are not rotated.  Only the velocities are represented in new bases. So, now in new $V_x$ the x axis is aligned at $45^{\circ}$ from the horizontal.
+> note that the axis are not rotated. Here the velocity and any point (x,y) is projected on new bases but the velocity vector is still of point (x,y).
+
+## Rotate Coordinate axis
+To rotate the coordinate system we can use the `rotate_coordinates_degrees()` function. Here input angle must be in degrees.
+
+
+```python
+vmin= -1
+vmax= 1
+colormap='cool'
+
+fig = plt.figure(figsize=(5,1.5))
+
+ax1 = fig.add_subplot(121)
+d1 = s1.make_data(n=25)
+d1['z'] = d1['u']
+ddr_davis_data.plot_contourf(ax=ax1,data=d1,
+                             vmax=vmax,vmin=vmin,add_colorbar=False,colormap=colormap)
+
+ax2 = fig.add_subplot(122)
+d1['x'],d1['y'] = ddr_davis_data.rotate_coordinates_degrees(d1['x'],d1['y'],angle=45)
+ddr_davis_data.plot_contourf(ax=ax2,data=d1,
+                             vmax=vmax,vmin=vmin,add_colorbar=False,colormap=colormap)
+
+plt.tight_layout()
+plt.subplots_adjust(right=0.85)
+ax = fig.add_axes([0.92,0.05,0.015,0.85])
+ddr_davis_data.plot_colorbar(vmin=vmin,vmax=vmax,cax=ax,font_size=7,
+                             colormap=colormap,roundto=2,ctitle='$V_x$ [m/s]',cticks=5)
+
+plt.show()
+```
+
+
+    
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_42_0.png?raw=true)
+    
+
+
+## Get data at a point
+
+`get_data_at_point()` function gives the `z` value at `(px,py)` point from the domain.
+
+
+```python
+d1 = s1.make_data(n=25)
+d1['z'] = d1['u']
+print(ddr_davis_data.get_data_at_point(data=d1,px=20,py=50))
+```
+
+    -1.3974445965482185
+    
+
+## Get data at (on) the line
+
+`get_data_at_line()` function returns the x,y,z values. where x,y are points on the line and z is the scalar at al (x,y) points.
+
+
+```python
+d1 = s1.make_data(n=25)
+d1['z'] = d1['u']
+
+# getting data over the line
+x,y,z = ddr_davis_data.get_data_at_line(data=d1,x1=-30,y1=20,x2=40,y2=50,n_points=100)
+
+fig = plt.figure(figsize=(5,1.5))
+
+ax1 = fig.add_subplot(121)
+# plotting contour plot
+ddr_davis_data.plot_contourf(data=d1,vmax=1,vmin=-1,ax=ax1,font_size=5,colormap='cool')
+#plotting line over the contour plot
+ax1.scatter(x,y,s=1,c='k')
+
+ax2 = fig.add_subplot(122)
+# plotting z values w.r.t y
+ax2.scatter(y,z/z.max(),s=1,c='k')
+
+plt.tight_layout()
+plt.show()
+```
+
+
+    
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_48_0.png?raw=true)
+    
+
+
+## Saving the data to other directory in .npy format
+
+
+```python
+
+```

@@ -1,7 +1,6 @@
 # general things to ignore
 build/
 dist/
-examples/
 PIV_data/
 cli_codes.txt
 *.ipynb

@@ -52,6 +52,22 @@ def rotate_coordinates_degrees(x,y,angle=0):
     return x,y
 
 def rotate_bases(d1,angle=0):
+    '''Rotates the coordinate bases
+
+    Parameters
+    ----------
+    d1 : TYPE
+        DESCRIPTION.
+    angle : TYPE, optional
+        DESCRIPTION. The default is 0.
+
+    Returns
+    -------
+    d1 : TYPE
+        DESCRIPTION.
+
+    '''
+    
     mask1 = d1['u'].mask
     uv = _np.array([d1['u'].data.flatten(),d1['v'].data.flatten()])
     theta1 = angle * _np.pi/180
@@ -64,70 +80,149 @@ def rotate_bases(d1,angle=0):
     d1['v'] = _np.ma.masked_array(d1['v'],mask=mask1,fill_value=0,dtype='float64')
     return d1
 
+def get_data_at_point(data,px=0,py=0,dx=None,dy=None):
+    '''
+    calculates the data['z'] at (px,py) point in the domain. Data is interpolated using distance weighted average from its neighbouring points.
+
+    Parameters
+    ----------
+    data : dict
+        s1.make_data() type of data. It has x,y,z values. x,y are coordinates meshgrid. and z is the scalar of interest in the domain.
+    px : float, optional
+        X coordinate. The default is 0.
+    py : float, optional
+        Y coordinate. The default is 0.
+    dx : float, optional
+        delta x in the data['x']. This value is utilized to filter out the neighbours. The code looks at px +/- dx coordinates for all the points.
+        then from obtained coordinates, it calculates the weighted average. The default is None. If None then code calculated dx from itself.
+    dy : float, optional
+        delta y in the data['y']. The default is None.
+
+    Returns
+    -------
+    pz : float
+        weighted average of data['z'].
+
+    '''
+    if dx is None:
+        dx = _np.diff(_np.unique(data['x']))[0]
+    if dy is None:
+        dy = _np.diff(_np.unique(data['y']))[0]
+        
+    f1 = data['x'] >= (px - dx)
+    f1 = f1 & (data['x'] <= (px + dx))
+    f1 = f1 & (data['y'] >= (py - dy))
+    f1 = f1 & (data['y'] <= (py + dy))
+    
+    px1 = data['x'][f1]
+    py1 = data['y'][f1]
+    pz1 = data['z'].data[f1]
+    
+    ws = ((px1 - px)**2 + (py1 - py)**2)**0.5
+    pz = (ws*pz1).sum()/ws.sum()
+    return pz
+
+def make_line(x1:float,y1:float,x2:float,y2:float,n_points:int=100):
+    '''
+    generates coordinates (=n_points) over the line passing from (x1,y1) and (x2,y2)
+
+    Parameters
+    ----------
+    x1 : float
+        x - coordinate
+    y1 : float
+        y - coordinate
+    x2 : float
+        x - coordinate
+    y2 : float
+        y - coordinate
+    n_points : int, optional
+        number of points between (x1,y1) and (x2,y2). The default is 100.
+
+    Returns
+    -------
+    x : numpy_array like
+        x-coordinates
+    y : numpy_array like
+        y-coordinates
+
+    '''
+    m = (y2-y1) / (x2-x1)
+    c = y2 - m*x2
+    
+    x = _np.linspace(x1,x2,n_points)
+    y = m*x + c
+    return x,y
+
+
+def get_data_at_line(data,x1,y1,x2,y2,n_points=100,dx=None,dy=None):
+    '''
+    generates coordinates (=n_points) over the line passing from (x1,y1) and (x2,y2) and calculates the interpolated data['z'] over the line.
+    
+    The code utilizes the function make_line() to get line coordinates, and get_data_at_point() function to get data at individual point over the line.
+    Hence the detail explanation of all the arguments of this function can be obtained from the above two functions.
+
+    Parameters
+    ----------
+    x1 : float
+        x - coordinate
+    y1 : float
+        y - coordinate
+    x2 : float
+        x - coordinate
+    y2 : float
+        y - coordinate
+    n_points : int, optional
+        number of points between (x1,y1) and (x2,y2). The default is 100.
+    dx : float, optional
+        delta x in the data['x']. This value is utilized to filter out the neighbours. The code looks at px +/- dx coordinates for all the points.
+        then from obtained coordinates, it calculates the weighted average. The default is None. If None then code calculated dx from itself.
+    dy : float, optional
+        delta y in the data['y']. The default is None.    
+
+    Returns
+    -------
+    x : numpy_array like
+        x-coordinates
+    y : numpy_array like
+        y-coordinates
+    z : numpy_array like
+        data['z'] values over x and y
+
+    '''
+    x,y = make_line(x1,y1,x2,y2,n_points=100)
+    z = _np.zeros(x.shape)
+    i = 0
+    for xp,yp in zip(x,y):
+        z[i] = get_data_at_point(data,px=xp,py=yp,dx=dx,dy=dy)
+        i += 1
+    return x,y,z
+
+
 
 def imshow(img,*args,**kwargs):
     _plt.imshow(img,*args,**kwargs)
     _plt.xticks([])
     _plt.yticks([])
 
+def meshgrid_to_linspace(x,y):
+    '''
+    converts x and y meshgrid to numpy.linspace type array
 
-def decode_A1(case_name):
-    str1 = case_name.upper()
-    idx1 = str1.index('_A_')
-    astr1 = ''
-    g = 0
-    for i in range(idx1+2,len(str1),1):
-        if str1[i].isdigit():
-            g = 1
-            astr1 = astr1 + str1[i]
-        elif g == 1:
-            break
-    return int(astr1)
+    Parameters
+    ----------
+    x : 2-D numpy array
+    y : 2-D numpy array
 
-def decode_s1(case_name):
-    str1 = case_name.upper()
-    idx1 = str1.index('_S_')
-    astr1 = ''
-    g = 0
-    for i in range(idx1+2,len(str1),1):
-        if str1[i].isdigit():
-            g = 1
-            astr1 = astr1 + str1[i]
-        elif g == 1:
-            break
-    return int(astr1)
+    Returns
+    -------
+    x1 : 1-D numpy array
+    y1 : 1-D numpy array
 
-
-def decode_holes1(proj_name):
-    str1 = proj_name.lower()
-    try:
-        idx1 = str1.index('holes')
-        str2 = str1[idx1:idx1+12]
-        if 'close' in str2:
-            return 'close'
-        elif 'open' in str2:
-            return 'open'
-    except ValueError as e:
-        return 'open'
-
-
-def get_exp_props(filepath,air=None,seeding=None,pressure=None,trial=None):
-    data1 = _pd.read_excel(filepath)    
-    if air is not None:
-        f1 = data1['m_air'] == air
-        data1 = data1[f1]
-    if seeding is not None:
-        f1 = data1['m_seeding'] == seeding
-        data1 = data1[f1]
-    if pressure is not None:
-        f1 = data1['P_inlet'] == pressure
-        data1 = data1[f1]
-    if trial is not None:
-        f1 = data1['trial'] == trial
-        data1 = data1[f1]
-    return data1
-
-
+    '''
+    x1 = _np.linspace(x.min(),x.max(),x.shape[1])
+    y1 = _np.linspace(y.min(),y.max(),y.shape[0])
+    return x1,y1
 
 
 

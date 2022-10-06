@@ -332,25 +332,143 @@ class velocity_set(_ds):
         
         return data
     
-    def make_streamline_data(self,n=0,frame=0):
+    def make_streamline_data(self,n=0):
         data = {}
         
         data['u'],data['v'] = self.u(n=n),self.v(n=n)
         data['x'],data['y'] = self.vector_linspace(n=n)
         return data
     
-    def get_data_at_point(self,key=None,data=None,x=0,delx=0.25,y=0,dely=0.25,n=0):
-        if data is None:
-            data = self.make_contour_data(z=key,unit=True,n=n)
-        f1 = data['x'] >= x-delx
-        f1 = f1 & (data['x'] <= x+delx)
-        f1 = f1 & (data['y'] >= y-dely)
-        f1 = f1 & (data['y'] <= y+dely)
+
+def save_set(vel_set,set_name,set_path,n_start=0,n_end=-1):
+    ls1 = local_set(set_name,set_path,make_folder=True)
+    ls1.save_case(case=vel_set,n_start=n_start,n_end=n_end)
+
+    
+class local_set:
+    
+    def __init__(self,set_name,set_path,make_folder = False):
+        '''
+        class to access locally saved data. The class provides major functionalities as elocity_set, mainly make_data() function.
         
-        return data['z'][f1]
+
+        Parameters
+        ----------
+        set_name : str
+            name of the velocity_set.
+        set_path : str or path type
+            path of the velocity_set folder
+        make_folder : BOOL, optional
+            whether to make folder or not. If class is used to save the data then this attribute should be True. The default is False.
+
+        Returns
+        -------
+        None.
+
+        '''
+        foldpath = _os.path.join(set_path,set_name)
+        self.xfp = _os.path.join(foldpath,'x.npy')
+        self.yfp = _os.path.join(foldpath,'y.npy')
+        self.maskfp = _os.path.join(foldpath,'mask.npy')
+        self.Ufp = _os.path.join(foldpath,'Us')
+        self.Vfp = _os.path.join(foldpath,'Vs')
+        
+        self.SVDfp = _os.path.join(foldpath,'SVD')
+        self.uv1fp = _os.path.join(foldpath,'uv1.npy')
+        
+        if make_folder:
+            make_dir(foldpath)
+            make_dir(self.Ufp)
+            make_dir(self.Vfp)
+            # make_dir(self.SVDfp)
+            self.req_loaded = False
+        else:
+            self.load_reqs()
+        
+    
+    def save_coords(self,data):
+        _np.save(file=self.xfp,arr=data['x'])
+        _np.save(file=self.yfp,arr=data['y'])
+    
+    def save_mask(self,data):
+        _np.save(file=self.maskfp,arr=data['u'].mask)
+        
+    
+    def load_reqs(self):
+        self.x = _np.load(self.xfp)
+        self.y = _np.load(self.yfp)
+        self.mask = _np.load(self.maskfp)
+        self.req_loaded = True
+        
+    def u(self,n=0):
+        fname = str(n) + '.npy'
+        return _np.ma.masked_array(_np.load(_os.path.join(self.Ufp,fname)),
+                                   mask=self.mask,
+                                   fill_value=0,dtype='float64')
+    
+    def v(self,n=0):
+        fname = str(n) + '.npy'
+        return _np.ma.masked_array(_np.load(_os.path.join(self.Vfp,fname)),
+                                   mask=self.mask,
+                                   fill_value=0,dtype='float64')
     
     
+    def load_uv1(self):
+        return _np.load(self.uv1fp)
+    
+    def save_uv1(self,data):
+        return _np.save(file=self.uv1fp, arr=data)
     
     
+    def save_SVD(self,U,eps,V_T):
+        _np.save(file = _os.path.join(self.SVDfp,'U.npy'),
+                 arr=U)
+        _np.save(file = _os.path.join(self.SVDfp,'eps.npy'),
+                 arr=eps)
+        _np.save(file = _os.path.join(self.SVDfp,'V_T.npy'),
+                 arr=V_T)
+        
+    def load_SVD(self):
+        U = _np.load(file = _os.path.join(self.SVDfp,'U.npy'))
+        eps = _np.load(file = _os.path.join(self.SVDfp,'eps.npy'))
+        V_T = _np.load(file = _os.path.join(self.SVDfp,'V_T.npy'))
+        return U,eps,V_T
+        
+    def save_uv(self,data,n=-1):
+        if  n == -1:
+            fname = '_1.npy'
+        else:
+            fname = str(n) + '.npy'
+        _np.save(file = _os.path.join(self.Ufp,fname),
+                 arr=data['u'].data)
+        _np.save(file = _os.path.join(self.Vfp,fname),
+                 arr=data['v'].data)
     
+    def save_case(self,case,n_start=0,n_end=-1):
+        d1 = case.make_data(n=n_start)
+        self.save_coords(d1)
+        self.save_mask(d1)
+        if n_end == -1:
+            n_end = len(case)
+        for i in range(n_start, n_end):
+            print(i)
+            d1 = case.make_data(n=i)
+            self.save_uv(d1,n=i)
+        return
+    
+    def make_data(self,n=0):
+        data = {}
+        if not self.req_loaded:
+            self.load_reqs()
+        data['x'],data['y'] = self.x, self.y
+        data['u'],data['v'] = self.u(n=n),self.v(n=n)
+        return data
+    
+    def make_streamline_data(self,n=0):
+        data = self.make_data(n=n)
+        data['x'],data['y'] = meshgrid_to_linspace(data['x'],data['y'])
+        return data
+    
+    
+
     
