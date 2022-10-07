@@ -594,5 +594,44 @@ plt.show()
     
 
 
+we can get the length of the local set as follows
+
+
+```python
+print(len(ls1))
+```
+
+    3
+    
+
+## Handling multiple velocitites frames
+multiple velocities frames can be combined togather in single 3-D array. That array can be saved and retried later. We call this kind of multiple frames as `Us` and `Vs`.
+
+
+```python
+# make 3-D array
+print(ls1.get_multiple_u(0,3).shape)
+```
+
+    (222, 295, 3)
+    
+
+Save the `Us` and `Vs`.
+
+
+```python
+ls1.save_UVs(n_start=0,n_end=-1)
+```
+
+Load the `Us`
+
+
+```python
+print(ls1.Vs.shape)
+```
+
+    (222, 295, 3)
+    
+
 ---
 ---

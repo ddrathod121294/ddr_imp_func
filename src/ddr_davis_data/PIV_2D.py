@@ -376,6 +376,8 @@ class local_set:
         
         self.SVDfp = _os.path.join(foldpath,'SVD')
         self.uv1fp = _os.path.join(foldpath,'uv1.npy')
+        self.Usfp = _os.path.join(foldpath,'Us.npy')
+        self.Vsfp = _os.path.join(foldpath,'Vs.npy')
         
         if make_folder:
             make_dir(foldpath)
@@ -386,6 +388,15 @@ class local_set:
         else:
             self.load_reqs()
         
+    def __repr__(self):
+        return f'local_set object'
+    
+    def __len__(self):
+        return len(get_file_name(self.Ufp))
+    
+    def __getitem__(self,i):
+        return self.make_data(i)
+    
     
     def save_coords(self,data):
         _np.save(file=self.xfp,arr=data['x'])
@@ -473,6 +484,45 @@ class local_set:
         data['x'],data['y'] = meshgrid_to_linspace(data['x'],data['y'])
         return data
     
+    def get_multiple_u(self,n_start=0,n_end=-1):
+        if n_end == -1:
+            n_end = len(self)
+        n = n_start
+        fname = str(n) + '.npy'
+        u1 = _np.load(_os.path.join(self.Ufp,fname))
+        for n in range(n_start+1,n_end):
+            fname = str(n) + '.npy'
+            utemp = _np.load(_os.path.join(self.Ufp,fname))
+            u1 = _np.dstack((u1,utemp))
+        return u1
     
+    def get_multiple_v(self,n_start=0,n_end=-1):
+        if n_end == -1:
+            n_end = len(self)
+        n = n_start
+        fname = str(n) + '.npy'
+        u1 = _np.load(_os.path.join(self.Vfp,fname))
+        for n in range(n_start+1,n_end):
+            fname = str(n) + '.npy'
+            utemp = _np.load(_os.path.join(self.Vfp,fname))
+            u1 = _np.dstack((u1,utemp))
+        return u1
+    
+    def save_UVs(self,n_start=0,n_end=-1):
+        u1 = self.get_multiple_u(n_start=n_start,n_end=n_end)
+        _np.save(file = self.Usfp,
+                 arr=u1)
+        
+        u1 = self.get_multiple_v(n_start=n_start,n_end=n_end)
+        _np.save(file = self.Vsfp,
+                 arr=u1)
+    
+    @property
+    def Us(self):
+        return _np.load(file = self.Usfp)
+    
+    @property
+    def Vs(self):
+        return _np.load(file = self.Vsfp)
 
     
