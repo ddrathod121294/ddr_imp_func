@@ -147,11 +147,15 @@ def make_line(x1:float,y1:float,x2:float,y2:float,n_points:int=100):
         y-coordinates
 
     '''
-    m = (y2-y1) / (x2-x1)
-    c = y2 - m*x2
-    
-    x = _np.linspace(x1,x2,n_points)
-    y = m*x + c
+    # if the ilne is verticle then "division by zero" error will come
+    if x2 == x1:
+        x = _np.zeros(n_points) + x2
+        y = _np.linspace(y1,y2,n_points)
+    else:
+        m = (y2-y1) / (x2-x1)
+        c = y2 - m*x2
+        x = _np.linspace(x1,x2,n_points)
+        y = m*x + c
     return x,y
 
 
@@ -190,7 +194,7 @@ def get_data_at_line(data,x1,y1,x2,y2,n_points=100,dx=None,dy=None):
         data['z'] values over x and y
 
     '''
-    x,y = make_line(x1,y1,x2,y2,n_points=100)
+    x,y = make_line(x1,y1,x2,y2,n_points=n_points)
     z = _np.zeros(x.shape)
     i = 0
     for xp,yp in zip(x,y):

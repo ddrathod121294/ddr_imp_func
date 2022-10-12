@@ -80,8 +80,8 @@ def plot_quiver(vel_set=None,n=0,data=None,ax=None,fracx=6,fracy=None,**kwargs):
     ax.quiver(data['x'],data['y'],data['u'],data['v'],**kwargs)
     return ax
     
-def plot_colorbar(ax=None,cax=None,vmax='max',vmin='min',colormap='jet',
-                  ctitle='',font_size=25,cticks=11,roundto=2):
+def plot_colorbar(ax=None,cax=None,vmax='max',vmin='min',colormap=None,
+                  ctitle=None,font_size=None,cticks=11,roundto=1,clabel=None,rotation=270,labelpad=10):
     if vmax == 'max':
         vmax = 1
     if vmin == 'min':
@@ -91,21 +91,29 @@ def plot_colorbar(ax=None,cax=None,vmax='max',vmin='min',colormap='jet',
     norm = _mpl.colors.Normalize(vmin=vmin,vmax=vmax)
     sm = _plt.cm.ScalarMappable(cmap=cmap,norm=norm)
     
+    ticks1 =  _np.linspace(vmin,vmax,cticks,endpoint=True).round(roundto)
+    
     if cax is None:
         if ax is None:
             ax = _plt.gca()
-        cbar = _plt.colorbar(sm,ax=ax,ticks = _np.linspace(vmin*0.99,vmax,cticks,endpoint=True).round(roundto),orientation='vertical')
+        cbar = _plt.colorbar(sm,ax=ax,ticks=ticks1,orientation='vertical')
     else:
-        cbar = _plt.colorbar(sm,cax=cax,ticks = _np.linspace(vmin*0.99,vmax,cticks,endpoint=True).round(roundto),orientation='vertical')
-        
-    cbar.ax.set_title(ctitle,fontsize=font_size,pad=25)
-    cbar.ax.tick_params(labelsize=font_size)
+        cbar = _plt.colorbar(sm,cax=cax,ticks=ticks1,orientation='vertical')
+    
+    # cbar.set_ticklabels(ticks1)
+    cbar.set_ticks(ticks1)
+    if ctitle is not None:
+        cbar.ax.set_title(ctitle,fontsize=font_size,pad=25)
+    if clabel is not None:
+        cbar.set_label(clabel,rotation=rotation,labelpad=labelpad)
+    if font_size is not None:
+        cbar.ax.tick_params(labelsize=font_size)
     return ax
 
 
 def plot_contourf(vel_set=None,n=0,data=None,z='u',ax=None,vmax='max',vmin='min',
-                  add_colorbar=True,colormap='jet',ctitle='',font_size=25,cticks=10,levels=200,alpha=1,
-                  roundto=2):
+                  add_colorbar=True,colormap=None,ctitle=None,font_size=None,cticks=10,levels=200,alpha=1,
+                  roundto=1,clabel=None,rotation=270,labelpad=10):
     '''plot contourf for the velocity_set
     plots filled contour of a scalar either from vel_set or data, whichever is defined. If vel_set is defined then n (image number), 'z'(saclar to plot) is to be
     defined. If both vel_set and data are defined then data is given the priority above vel_set.
@@ -134,7 +142,7 @@ def plot_contourf(vel_set=None,n=0,data=None,z='u',ax=None,vmax='max',vmin='min'
     ctitle : TYPE, optional
         DESCRIPTION. The default is ''.
     font_size : TYPE, optional
-        DESCRIPTION. The default is 25.
+        DESCRIPTION. The default is None.
     cticks : TYPE, optional
         DESCRIPTION. The default is 10.
     levels : TYPE, optional
@@ -156,9 +164,9 @@ def plot_contourf(vel_set=None,n=0,data=None,z='u',ax=None,vmax='max',vmin='min'
     if data is None:
         data = vel_set.make_contour_data(n=n,z=z)
     if vmax == 'max':
-        vmax = _np.quantile(data['z'].data,0.99)
+        vmax = _np.quantile(data['z'].data,0.99).round(roundto)
     if vmin == 'min':
-        vmin = _np.quantile(data['z'].data,0.01)
+        vmin = _np.quantile(data['z'].data,0.01).round(roundto)
     
     cmap = _plt.get_cmap(colormap,256)
     norm = _mpl.colors.Normalize(vmin=vmin,vmax=vmax)
@@ -168,7 +176,7 @@ def plot_contourf(vel_set=None,n=0,data=None,z='u',ax=None,vmax='max',vmin='min'
     
     if add_colorbar:
         plot_colorbar(ax=ax,vmax=vmax,vmin=vmin,colormap=colormap,ctitle=ctitle,
-                     font_size=font_size,cticks=cticks,roundto=roundto)
+                     font_size=font_size,cticks=cticks,roundto=roundto,clabel=clabel,rotation=rotation,labelpad=labelpad)
     
     return ax
 

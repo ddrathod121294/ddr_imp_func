@@ -387,7 +387,16 @@ class local_set:
             self.req_loaded = False
         else:
             self.load_reqs()
-        
+    
+    
+    @classmethod
+    def from_foldpath(cls,foldpath,*args,**kwargs):
+        set_name = _os.path.basename(foldpath)
+        set_foldpath = _os.path.dirname(foldpath)
+        return cls(set_name,set_foldpath,*args,**kwargs)
+    
+    
+    
     def __repr__(self):
         return f'local_set object'
     
