@@ -434,6 +434,10 @@ class local_set:
                                    fill_value=0,dtype='float64')
     
     
+    def add_mask(self,data):
+        return _np.ma.masked_array(data,mask=self.mask,fill_value=0,dtype='float64')
+        
+    
     def load_uv1(self):
         return _np.load(self.uv1fp)
     
@@ -533,5 +537,7 @@ class local_set:
     @property
     def Vs(self):
         return _np.load(file = self.Vsfp)
+    
+    
 
     

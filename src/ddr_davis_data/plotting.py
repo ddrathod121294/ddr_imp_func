@@ -17,7 +17,7 @@ def remove_ax_lines(ax):
     return ax
 
 # def plot_quiver(vel_set=None,n=0,data=None,ax=None,fracx=6,fracy=None,scale=0.8,width=0.1,headwidth=12,headlength=15,minshaft=2,minlength=0.1,units='xy',scale_units='xy'):
-def plot_quiver(vel_set=None,n=0,data=None,ax=None,fracx=6,fracy=None,**kwargs):
+def plot_quiver(vel_set=None,n=0,data=None,ax=None,fracx=6,fracy=None,normalize=False,**kwargs):
     '''
     plots quiver (vectors) either from vel_set or data, whichever is defined. If vel_set is defined then n (image number), 'z'(saclar to plot) is to be
     defined. If both vel_set and data are defined then data is given the priority above vel_set.
@@ -37,6 +37,8 @@ def plot_quiver(vel_set=None,n=0,data=None,ax=None,fracx=6,fracy=None,**kwargs):
         sub-sample over the x-axis to reduce the clutter. If fracx is 4 then for every 4 data one will be taken for plotting. The default is 6.
     fracy : str or int, optional
         Same as fracx but in y-direction. The default is None. If None then fracy = fracx
+    normalize : bool, optional
+        whether to normalize the vector for plotting. if true, vectors are normalized with its magnitude. make this true if vectors vary too much in magnitude over the plot.
     **kwargs : plt.quiver keyword arguments
         gives the freedom to modify the plot according to the needs.
 
@@ -76,6 +78,11 @@ def plot_quiver(vel_set=None,n=0,data=None,ax=None,fracx=6,fracy=None,**kwargs):
     
     data = {'x': x1, 'y':y1,
             'u': u1, 'v':v1}
+    
+    if normalize:
+        data['z'] = (data['u']**2+data['v']**2)**0.5
+        data['u'] = data['u']/data['z']
+        data['v'] = data['v']/data['z']
     
     ax.quiver(data['x'],data['y'],data['u'],data['v'],**kwargs)
     return ax
@@ -197,7 +204,7 @@ def plot_image(vel_set=None,n=0,frame=0,data=None,ax=None,vmin=0,vmax=3000,level
     return ax
 
 
-def plot_streamlines(vel_set=None,n=0,data=None,ax=None,density=(5,5),linewidth=1,color='white'):
+def plot_streamlines(vel_set=None,n=0,data=None,ax=None,density=(5,5),linewidth=1,color='white',**kwargs):
     
     if ax is None:
         ax = _plt.gca()
@@ -206,7 +213,7 @@ def plot_streamlines(vel_set=None,n=0,data=None,ax=None,density=(5,5),linewidth=
         data = vel_set.make_streamline_data(n=n)
     
     ax.streamplot(data['x'],data['y'],data['u'][::-1],data['v'][::-1],
-                  density=density,linewidth=linewidth,color=color)
+                  density=density,linewidth=linewidth,color=color,**kwargs)
     
     return ax
 

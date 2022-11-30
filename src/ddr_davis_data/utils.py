@@ -203,6 +203,17 @@ def get_data_at_line(data,x1,y1,x2,y2,n_points=100,dx=None,dy=None):
     return x,y,z
 
 
+def get_omega_z(data):
+    dx = _np.diff(_np.unique(data['x']))[0]
+    dy = _np.diff(_np.unique(data['y']))[0]
+    wz = (_np.gradient(-data['v'],dx,axis=1) - _np.gradient(data['u'],dy,axis=0))*1000
+    data['z'] = -wz
+    return data
+
+def get_mod_V(data):
+    data['z'] = (data['u']**2 + data['v']**2)**0.5
+    return data
+
 
 def imshow(img,*args,**kwargs):
     _plt.imshow(img,*args,**kwargs)
@@ -228,6 +239,9 @@ def meshgrid_to_linspace(x,y):
     y1 = _np.linspace(y.min(),y.max(),y.shape[0])
     return x1,y1
 
+def get_streamline_data(data):
+    data['x'],data['y'] = meshgrid_to_linspace(data['x'],data['y'])
+    return data
 
 
 
