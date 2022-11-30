@@ -29,7 +29,12 @@ import ddr_davis_data
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+
+print(ddr_davis_data.version)
 ```
+
+    0.1.19
+    
 
 We need the filepath to Davis set. Here, we will take one average velocity set file. In Davis the files are arranges in chronological manner. The base or the first set (folder containing files) is of recorded images. Then folder inside the base set can be anything depending upon the processing performed. If background image is subtracted then, the next folder would contain subtracted images. Then next folder inside that folder would be instantaneous and then average velocity folder. The hierarchy of the folder depends upon the processing sequence performed. For the case shown here, the hierarchy is as follows.
 
@@ -238,7 +243,8 @@ Above code directly access the ` lvreader.frame.VectorFrame.plot()` function. Th
 fig = plt.figure(figsize=(3,1.5))
 ax = fig.add_subplot(111)
 
-ddr_davis_data.plot_contourf(ax=ax, vel_set=s1, n=10, z='velocity_magnitude', font_size=7, ctitle='|V|[m/s]')
+ddr_davis_data.plot_contourf(ax=ax, vel_set=s1, n=10, z='velocity_magnitude', font_size=7,
+                            ctitle='|V|',clabel='[m/s]',labelpad=10)
 plt.show()
 ```
 
@@ -257,10 +263,12 @@ plt.show()
 fig = plt.figure(figsize=(8,2))
 
 ax1 = fig.add_subplot(121)
-ddr_davis_data.plot_contourf(ax=ax1, vel_set=s1, n=7, z='u', font_size=10, ctitle='$V_x$[m/s]')
+ddr_davis_data.plot_contourf(ax=ax1, vel_set=s1, n=7, z='u', font_size=10,
+                             ctitle='$V_x$',clabel='[m/s]',labelpad=10)
 
 ax2 = fig.add_subplot(122)
-ddr_davis_data.plot_contourf(ax=ax2, vel_set=s1, n=7, z='v', font_size=10, ctitle='$V_y$[m/s]')
+ddr_davis_data.plot_contourf(ax=ax2, vel_set=s1, n=7, z='v', font_size=10,
+                             ctitle='$V_y$',clabel='[m/s]',labelpad=10)
 
 plt.show()
 ```
@@ -358,9 +366,10 @@ d1['z'] = (d1['u']**2 + d1['v']**2)**0.5
 #plotting contour of velocity magnitude
 ddr_davis_data.plot_contourf(ax=ax1,data=d1,font_size=7,ctitle='|V| [m/s]')
 #plotting vectors, here the width and scale are adjusted for better vision
-ddr_davis_data.plot_quiver(ax=ax1,data=d1,fracx=5,fracy=5,scale=100,width=0.005,color='#000000ff')
+ddr_davis_data.plot_quiver(ax=ax1,data=d1,fracx=5,fracy=5,scale=20,width=0.007,color='#000000ff',normalize=True)
 plt.show()
 ```
+`normalize = True` attribute will normalize the velocity values. This helps when the velocity magnitudes changes very much within the plot.
 
 
     
@@ -391,6 +400,20 @@ plt.show()
 
 here `arrowsize` is 0.01 for better visualization. But for some cases, default `arrowsize` gives good results.
 
+## get $\omega_z$
+
+There is a function to calculate $\omega_z$ from the data. The function accepts the data in dict like object form.
+
+```py
+d1 = s1.make_data(n=0)
+d1 = get_omega_z(data=d1)
+
+```
+
+```d1['z']``` contains the calculated $\omega_z$ from the given data. You can further use this dict like data in plotting or any analysis.
+
+Similarly there is function ```get_mod_V``` which accepts the same dict like data, and calculates the velocity magnitude. As this calculation is one line and you can do it easily, the usage of function is not specifically described here.
+
 ## Accessing recording images
 Recording images can be accessed if `load_rec=True` in instantiation of velocity_set object. Also there should be recording *.set* files in the parent directory (at any level) of the velocity set file.
 
@@ -415,7 +438,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_38_0.png?raw=true)
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_37_0.png?raw=true)
     
 
 
@@ -457,7 +480,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_40_0.png?raw=true)
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_39_0.png?raw=true)
     
 
 
@@ -497,7 +520,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_42_0.png?raw=true)
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_41_0.png?raw=true)
     
 
 
@@ -545,7 +568,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_47_0.png?raw=true)
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_46_0.png?raw=true)
     
 
 
@@ -590,7 +613,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_54_0.png?raw=true)
+![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_53_0.png?raw=true)
     
 
 
