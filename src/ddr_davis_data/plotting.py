@@ -88,7 +88,8 @@ def plot_quiver(vel_set=None,n=0,data=None,ax=None,fracx=6,fracy=None,normalize=
     return ax
     
 def plot_colorbar(ax=None,cax=None,vmax='max',vmin='min',colormap=None,
-                  ctitle=None,font_size=None,cticks=11,roundto=1,clabel=None,rotation=270,labelpad=10):
+                  ctitle=None,font_size=None,cticks=11,roundto=1,clabel=None,rotation=270,labelpad=10,
+                  titlepad=10):
     if vmax == 'max':
         vmax = 1
     if vmin == 'min':
@@ -110,7 +111,7 @@ def plot_colorbar(ax=None,cax=None,vmax='max',vmin='min',colormap=None,
     # cbar.set_ticklabels(ticks1)
     cbar.set_ticks(ticks1)
     if ctitle is not None:
-        cbar.ax.set_title(ctitle,fontsize=font_size,pad=25)
+        cbar.ax.set_title(ctitle,fontsize=font_size,pad=titlepad)
     if clabel is not None:
         cbar.set_label(clabel,rotation=rotation,labelpad=labelpad)
     if font_size is not None:
