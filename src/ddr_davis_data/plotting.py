@@ -17,7 +17,7 @@ def remove_ax_lines(ax):
     return ax
 
 # def plot_quiver(vel_set=None,n=0,data=None,ax=None,fracx=6,fracy=None,scale=0.8,width=0.1,headwidth=12,headlength=15,minshaft=2,minlength=0.1,units='xy',scale_units='xy'):
-def plot_quiver(vel_set=None,n=0,data=None,ax=None,fracx=6,fracy=None,normalize=False,**kwargs):
+def plot_quiver(vel_set=None,n=0,data=None,ax=None,fracx=3,fracy=None,scale=50,width=0.0015,headwidth=4,normalize=True,**kwargs):
     '''
     plots quiver (vectors) either from vel_set or data, whichever is defined. If vel_set is defined then n (image number), 'z'(saclar to plot) is to be
     defined. If both vel_set and data are defined then data is given the priority above vel_set.
@@ -34,7 +34,7 @@ def plot_quiver(vel_set=None,n=0,data=None,ax=None,fracx=6,fracy=None,normalize=
     ax : matplotlib.pyplot.axes like, optional
         axes on which to plot. The default is None. If not specified then plt.gca() is used for plotting.
     fracx : int, optional
-        sub-sample over the x-axis to reduce the clutter. If fracx is 4 then for every 4 data one will be taken for plotting. The default is 6.
+        sub-sample over the x-axis to reduce the clutter. If fracx is 4 then for every 4 data one will be taken for plotting. The default is 3.
     fracy : str or int, optional
         Same as fracx but in y-direction. The default is None. If None then fracy = fracx
     normalize : bool, optional
@@ -84,7 +84,7 @@ def plot_quiver(vel_set=None,n=0,data=None,ax=None,fracx=6,fracy=None,normalize=
         data['u'] = data['u']/data['z']
         data['v'] = data['v']/data['z']
     
-    ax.quiver(data['x'],data['y'],data['u'],data['v'],**kwargs)
+    ax.quiver(data['x'],data['y'],data['u'],data['v'],scale=scale,width=width,headwidth=headwidth,**kwargs)
     return ax
     
 def plot_colorbar(ax=None,cax=None,vmax='max',vmin='min',colormap=None,
@@ -121,7 +121,7 @@ def plot_colorbar(ax=None,cax=None,vmax='max',vmin='min',colormap=None,
 
 def plot_contourf(vel_set=None,n=0,data=None,z='u',ax=None,vmax='max',vmin='min',
                   add_colorbar=True,colormap=None,ctitle=None,font_size=None,cticks=10,levels=200,alpha=1,
-                  roundto=1,clabel=None,rotation=270,labelpad=10):
+                  roundto=1,clabel=None,rotation=270,labelpad=10,qtile=0.01,equalize_at='min'):
     '''plot contourf for the velocity_set
     plots filled contour of a scalar either from vel_set or data, whichever is defined. If vel_set is defined then n (image number), 'z'(saclar to plot) is to be
     defined. If both vel_set and data are defined then data is given the priority above vel_set.
@@ -159,6 +159,11 @@ def plot_contourf(vel_set=None,n=0,data=None,z='u',ax=None,vmax='max',vmin='min'
         DESCRIPTION. The default is 1.
     roundto : TYPE, optional
         DESCRIPTION. The default is 2.
+    qtile : float, optional
+        DESCRIPTION. The default is 0.01. This is the quantile value to calculate vmax and vmin from z data.
+    equalize_at : str, optional
+        DESCRIPTION. The default is 'min'. The colorbar is equalized such that zero remains at the center. if 'min' then min(abs(vamx),abs(vmin)) is taken and if
+        'max' then max is taken.
 
     Returns
     -------
@@ -171,6 +176,25 @@ def plot_contourf(vel_set=None,n=0,data=None,z='u',ax=None,vmax='max',vmin='min'
         ax = _plt.gca()
     if data is None:
         data = vel_set.make_contour_data(n=n,z=z)
+    if (vmax == 'max') and (vmin=='min'):
+        if qtile == 0:
+            vmax = data['z'].data.max()
+            vmin = data['z'].data.min()
+        else:
+            vmax = _np.quantile(data['z'].data,1-qtile).round(roundto)
+            vmin = _np.quantile(data['z'].data,qtile).round(roundto)
+        
+        if (vmin==0) or (vmax==0):
+            pass
+        elif ((vmax /abs(vmax)) == (vmin/abs(vmin))):
+            pass
+        else:
+            if equalize_at == 'min':
+                v1 = min(abs(vmax),abs(vmin))
+            if equalize_at == 'max':
+                v1 = max(abs(vmax),abs(vmin))
+            vmax = v1 * vmax / abs(vmax)
+            vmin = v1 * vmin / abs(vmin)
     if vmax == 'max':
         vmax = _np.quantile(data['z'].data,0.99).round(roundto)
     if vmin == 'min':
