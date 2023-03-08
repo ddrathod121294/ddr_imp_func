@@ -14,12 +14,33 @@ from traitlets.config import Config
 from nbconvert import HTMLExporter, MarkdownExporter
 import os
 
-parent_folder = r'.'
-module_name = 'ddr_davis_data'
+### this is required for adjusting the links to images in converted .md file.
+repo_name = 'ddr_davis_data'
+github_username = 'dev-ddr'
+
+### this is the folder where .ipynb file is located
+parent_folder = os.getcwd()
+subfolder = None
+
+### add / in path instead of // or \. Because this string will be used in generating link to image file.
+# subfolder = r'Projects/Project1'
+# parent_folder = os.path.join(parent_folder,subfolder)
+input_filename = 'Readme.ipynb'
+output_filename = 'README.md'
 
 
-# read the raw data
-fp1 = os.path.join(parent_folder,'Readme.ipynb')
+####################################################################################################################################
+### Most of the code below does not require user attention.
+
+
+### this is the string to be appended on link of generated images
+if subfolder is None:
+    img_link1 = r'/blob/base/README_files/'
+else:
+    img_link1 = r'/blob/base/' + subfolder + r'/README_files/'
+
+### read the raw data
+fp1 = os.path.join(parent_folder,input_filename)
 with open(fp1) as f1:
     l1 = f1.readlines()
     
@@ -82,11 +103,11 @@ for m in re.finditer(r"!\[png\]",body):
 # replace the found strings
 for str1,iname1 in zip(l_str,l_img_name):
     i1 = body.find(str1)
-    rstr1 = r'![png](https://github.com/ddrathod121294/' + module_name + '/blob/base/README_files/' + iname1 +'?raw=true'
+    rstr1 = r'![png](https://github.com/'+ github_username + r'/' + repo_name + img_link1 + iname1 +'?raw=true'
     body = body.replace(str1,rstr1)
     
 # now we will write the body in README.md file
-fp1 = os.path.join(parent_folder,'README.md')
+fp1 = os.path.join(parent_folder,output_filename)
 with open(fp1,'w') as f1:
     f1.write(body)
     

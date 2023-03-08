@@ -228,7 +228,7 @@ s1.plot(n=10)
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_21_0.png?raw=true)
+![png](https://github.com/dev-ddr/ddr_davis_data/blob/base/README_files/output_21_0.png?raw=true)
     
 
 
@@ -250,7 +250,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_23_0.png?raw=true)
+![png](https://github.com/dev-ddr/ddr_davis_data/blob/base/README_files/output_23_0.png?raw=true)
     
 
 
@@ -275,7 +275,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_25_0.png?raw=true)
+![png](https://github.com/dev-ddr/ddr_davis_data/blob/base/README_files/output_25_0.png?raw=true)
     
 
 
@@ -305,7 +305,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_27_0.png?raw=true)
+![png](https://github.com/dev-ddr/ddr_davis_data/blob/base/README_files/output_27_0.png?raw=true)
     
 
 
@@ -345,7 +345,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_29_0.png?raw=true)
+![png](https://github.com/dev-ddr/ddr_davis_data/blob/base/README_files/output_29_0.png?raw=true)
     
 
 
@@ -373,7 +373,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_31_0.png?raw=true)
+![png](https://github.com/dev-ddr/ddr_davis_data/blob/base/README_files/output_31_0.png?raw=true)
     
 
 
@@ -394,7 +394,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_33_0.png?raw=true)
+![png](https://github.com/dev-ddr/ddr_davis_data/blob/base/README_files/output_33_0.png?raw=true)
     
 
 
@@ -438,7 +438,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_37_0.png?raw=true)
+![png](https://github.com/dev-ddr/ddr_davis_data/blob/base/README_files/output_37_0.png?raw=true)
     
 
 
@@ -480,7 +480,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_39_0.png?raw=true)
+![png](https://github.com/dev-ddr/ddr_davis_data/blob/base/README_files/output_39_0.png?raw=true)
     
 
 
@@ -520,7 +520,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_41_0.png?raw=true)
+![png](https://github.com/dev-ddr/ddr_davis_data/blob/base/README_files/output_41_0.png?raw=true)
     
 
 
@@ -568,7 +568,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_46_0.png?raw=true)
+![png](https://github.com/dev-ddr/ddr_davis_data/blob/base/README_files/output_46_0.png?raw=true)
     
 
 
@@ -613,7 +613,7 @@ plt.show()
 
 
     
-![png](https://github.com/ddrathod121294/ddr_davis_data/blob/base/README_files/output_53_0.png?raw=true)
+![png](https://github.com/dev-ddr/ddr_davis_data/blob/base/README_files/output_53_0.png?raw=true)
     
 
 
