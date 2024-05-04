@@ -324,6 +324,8 @@ class local_set:
         foldpath = _os.path.join(set_foldpath, set_name)
         self.xfp = _os.path.join(foldpath, 'x.npy')
         self.yfp = _os.path.join(foldpath, 'y.npy')
+        self.Usfp = _os.path.join(foldpath, 'Us.npy')
+        self.Vsfp = _os.path.join(foldpath, 'Vs.npy')
         self.maskfp = _os.path.join(foldpath, 'mask.npy')
         self.Ufp = _os.path.join(foldpath, 'Us')
         self.Vfp = _os.path.join(foldpath, 'Vs')

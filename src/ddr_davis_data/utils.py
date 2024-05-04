@@ -244,6 +244,71 @@ def get_streamline_data(data):
     return data
 
 
+def sample_at_point(
+    arr: _np.ndarray,
+    d1_avg: dict,
+    px: float,
+    py: float,
+    bbox_size: tuple[int, int] = (0, 0),
+) -> dict:
+    """Samples the 3-D array at (px,py) point.
+
+    The code samples the input data in arr. The information about the location of the point is obtained from d1_avg 'x' and 'y' key.
+
+    Parameters
+    ----------
+    arr : np.ndarray
+        array to be sampled
+    d1_avg : dict
+        dictionary containing 'x','y' and 'z' key.
+    px : float
+        x-coordinate of the sample point in mm.
+    py : float
+        y-coordinate of the sample point in mm.
+    bbox_size : tuple[int, int], optional
+        size of the box around (px,py) for sampling in mm, by default (0, 0)
+
+    Returns
+    -------
+    dict
+        dictionary containing 'x','y' and 'z' keys. 'x' and 'y' contains the coordinates of the sampled points. 'z' contains the sampled values.
+    """
+
+    x0, y0 = px, py
+    bbox_size_mm = 1, 1  # in mm
+
+    f1 = (d1_avg["x"] < (x0 + bbox_size_mm[0])) & (d1_avg["x"] > (x0 - bbox_size_mm[0]))
+    f1 = (
+        f1
+        & (d1_avg["y"] < (y0 + bbox_size_mm[1]))
+        & (d1_avg["y"] > (y0 - bbox_size_mm[1]))
+    )
+    px, py = _np.where(f1)
+    # print(px, py)
+    px, py = px[0], py[0]
+
+    if bbox_size == (0, 0):
+        arr2 = arr[px, py, :]
+        x = d1_avg["x"][px, py]
+        y = d1_avg["y"][px, py]
+    else:
+        arr2 = arr[
+            px - bbox_size[0] : px + bbox_size[0],
+            py - bbox_size[1] : py + bbox_size[1],
+            :,
+        ]
+        x = d1_avg["x"][
+            px - bbox_size[0] : px + bbox_size[0],
+            py - bbox_size[1] : py + bbox_size[1],
+        ]
+        y = d1_avg["y"][
+            px - bbox_size[0] : px + bbox_size[0],
+            py - bbox_size[1] : py + bbox_size[1],
+        ]
+
+    return {"x": x, "y": y, "z": _np.array(arr2)}
+
+
 
 
 

@@ -69,6 +69,7 @@ def plot_quiver(vel_set=None,n=0,data=None,ax=None,fracx=3,fracy=None,scale=50,w
     u1 = u[idx]
     v1 = v[idx]
     
+    idx = []
     for i in range(0,x1.shape[1],fracx):
         idx.append(i)
     x1 = x1[:,idx]
@@ -89,7 +90,7 @@ def plot_quiver(vel_set=None,n=0,data=None,ax=None,fracx=3,fracy=None,scale=50,w
     
 def plot_colorbar(ax=None,cax=None,vmax='max',vmin='min',colormap=None,
                   ctitle=None,font_size=None,cticks=11,roundto=1,clabel=None,rotation=270,labelpad=10,
-                  titlepad=10):
+                  titlepad=10, ticklabels:list=None):
     if vmax == 'max':
         vmax = 1
     if vmin == 'min':
@@ -116,6 +117,8 @@ def plot_colorbar(ax=None,cax=None,vmax='max',vmin='min',colormap=None,
         cbar.set_label(clabel,rotation=rotation,labelpad=labelpad)
     if font_size is not None:
         cbar.ax.tick_params(labelsize=font_size)
+    if ticklabels is not None:
+        cbar.ax.set_yticklabels(ticklabels)
     return ax
 
 

@@ -234,6 +234,84 @@ class davis_set:
         self.calibration = calib_file(fp1)
         return self.calibration
     
+    
+    def get_loading_func(self, comp:str):
+        if comp == 'u':
+            loading_func = self.u
+        if comp == 'v':
+            loading_func = self.v
+        if comp == 'w':
+            loading_func = self.w
+        if comp == 'img':
+            loading_func = self.image
+        return loading_func
+    
+    def print_num(self,num):
+        if (num%50==0):
+            print(num)
+        else:
+            print(num,end=',')
+        return
+    
+    def get_multiple_data(self,comp:str, n_start:int=0, n_end:int=-1,print_info:bool=False)->_np.array:
+        if n_end == -1:
+            n_end = len(self)
+        loading_func = self.get_loading_func(comp=comp)
+        u1 = loading_func(n=n_start)
+        if print_info:
+            self.print_num(n_start)
+        for n in range(n_start + 1, n_end):
+            if print_info:
+                self.print_num(n)
+            utemp = loading_func(n=n)
+            u1 = _np.dstack((u1, utemp))
+        return u1.data
+
+    def save_as_single_array(self,comp:str,print_info:bool=False,filepath:str=None)->None:
+        fname = comp.upper() + 's.npy'
+        if filepath is None:
+            fpath = _os.path.join(self.filepath,fname)
+        else:
+            fpath = _os.path.join(filepath,fname)
+        
+        n_start = 0
+        n_end = len(self)
+
+        loading_func = self.get_loading_func(comp=comp)
+        u1 = loading_func(n=0)
+        sh = u1.shape
+        if comp == 'img':
+            dtype1 = 'uint16'
+        else:
+            dtype1 = u1.dtype
+        data = _np.memmap(filename=fpath, dtype=dtype1, mode='w+', shape=(sh[0],sh[1],n_end))
+        for n in range(n_start,n_end):
+            data[:,:,n] = loading_func(n=n)
+            if print_info:
+                self.print_num(n)
+        data.flush()
+        return
+    
+    def load_as_single_array(self,comp:str,filepath:str=None, mode:str='c')->_np.array:
+        fname = comp.upper() + 's.npy'
+        if filepath is None:
+            fpath = _os.path.join(self.filepath,fname)
+        else:
+            fpath = _os.path.join(filepath,fname)
+        loading_func = self.get_loading_func(comp=comp)
+        u1 = loading_func(n=0)
+        sh = u1.shape
+        if comp == 'img':
+            dtype1 = 'uint16'
+        else:
+            dtype1 = u1.dtype
+        data = _np.memmap(filename=fpath, dtype=dtype1, mode=mode)
+        n1 = int(data.shape[0] / sh[0] / sh[1])
+        return data.reshape(sh[0],sh[1],n1)
+    
+    
+    
+    
 
 
 
